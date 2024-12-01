@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 400px;
+            margin: auto;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .message {
+            text-align: center;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Student Registration Form</h1>
+    <form id="studentForm">
+        <label for="name">Student Name:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="fatherName">Father's Name:</label>
+        <input type="text" id="fatherName" name="fatherName" required>
+        
+        <label for="motherName">Mother's Name:</label>
+        <input type="text" id="motherName" name="motherName" required>
+        
+        <label for="mobile">Mobile Number:</label>
+        <input type="text" id="mobile" name="mobile" required>
+        
+        <label for="class">Class:</label>
+        <select id="class" name="class" required>
+            <option value="Class 5">Class 5</option>
+            <option value="Class 6">Class 6</option>
+            <option value="Class 7">Class 7</option>
+            <option value="Class 8">Class 8</option>
+            <option value="Class 9">Class 9</option>
+        </select>
+        
+        <button type="submit">Submit</button>
+    </form>
+    <div id="message" class="message"></div>
+
+    <script>
+        document.getElementById('studentForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const fatherName = document.getElementById('fatherName').value;
+            const motherName = document.getElementById('motherName').value;
+            const mobile = document.getElementById('mobile').value;
+            const studentClass = document.getElementById('class').value;
+
+            // Send data to Google Sheets
+            fetch('https://script.google.com/macros/s/AKfycbyd2n1UfrRj_rKjgW29voXplBrVEIyCtu9eTZ65IzNBG_jyozAgPaqCWE7KVTaHe_bO/exec', {
+                method: 'POST',
+                body: JSON.stringify({
+                    name: name,
+                    fatherName: fatherName,
+                    motherName: motherName,
+                    mobile: mobile,
+                    class: studentClass
+                }),
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    document.getElementById('message').textContent = 
+                        `Thank you ${name} for filling up the form. Your roll number is ${data.rollNumber}.`;
+                } else {
+                    document.getElementById('message').textContent = 
+                        `Error: ${data.message}`;
+                }
+            })
+            .catch(error => {
+                document.getElementById('message').textContent = 
+                    `Error: Could not submit the form.`;
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
