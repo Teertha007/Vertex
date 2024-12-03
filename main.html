@@ -3,106 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Registration Form</title>
+    <title>Student Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            padding: 0;
         }
         form {
             max-width: 400px;
-            margin: auto;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         label {
             display: block;
-            margin: 10px 0 5px;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
         input, select, button {
             width: 100%;
-            padding: 10px;
             margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
         button {
-            background-color: #4CAF50;
+            background-color: #28a745;
             color: white;
-            border: none;
+            font-size: 16px;
             cursor: pointer;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #218838;
         }
-        .message {
+        .thank-you-message {
             text-align: center;
-            color: green;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #28a745;
         }
     </style>
 </head>
 <body>
-    <h1>Student Registration Form</h1>
-    <form id="studentForm">
-        <label for="name">Student Name:</label>
-        <input type="text" id="name" name="name" required>
-        
-        <label for="fatherName">Father's Name:</label>
-        <input type="text" id="fatherName" name="fatherName" required>
-        
-        <label for="motherName">Mother's Name:</label>
-        <input type="text" id="motherName" name="motherName" required>
-        
-        <label for="mobile">Mobile Number:</label>
-        <input type="text" id="mobile" name="mobile" required>
-        
-        <label for="class">Class:</label>
-        <select id="class" name="class" required>
-            <option value="Class 5">Class 5</option>
-            <option value="Class 6">Class 6</option>
-            <option value="Class 7">Class 7</option>
-            <option value="Class 8">Class 8</option>
-            <option value="Class 9">Class 9</option>
-        </select>
-        
-        <button type="submit">Submit</button>
-    </form>
-    <div id="message" class="message"></div>
 
-    <script>
-        document.getElementById('studentForm').addEventListener('submit', function(event) {
-            event.preventDefault();
+<h1>Student Information Form</h1>
+<form id="studentForm">
+    <label for="studentName">Student Name</label>
+    <input type="text" id="studentName" name="studentName" required>
+    
+    <label for="fathersName">Father's Name</label>
+    <input type="text" id="fathersName" name="fathersName" required>
+    
+    <label for="fathersPhone">Father's Phone Number</label>
+    <input type="tel" id="fathersPhone" name="fathersPhone" required>
+    
+    <label for="mothersName">Mother's Name</label>
+    <input type="text" id="mothersName" name="mothersName" required>
 
-            const name = document.getElementById('name').value;
-            const fatherName = document.getElementById('fatherName').value;
-            const motherName = document.getElementById('motherName').value;
-            const mobile = document.getElementById('mobile').value;
-            const studentClass = document.getElementById('class').value;
+    <label for="mothersPhone">Mother's Phone Number</label>
+    <input type="tel" id="mothersPhone" name="mothersPhone" required>
 
-            // Send data to Google Sheets
-            fetch('https://script.google.com/macros/s/AKfycbwYY4a9Q-10SJAESjWhKHPSOpOqt8L0u7tPHnIbhFDgo6JJYGpwpNw2rqCd6tZYAkHJ/exec', {
-                method: 'POST',
-                body: JSON.stringify({
-                    name: name,
-                    fatherName: fatherName,
-                    motherName: motherName,
-                    mobile: mobile,
-                    class: studentClass
-                }),
-                headers: { 'Content-Type': 'application/json' }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    document.getElementById('message').textContent = 
-                        `Thank you ${name} for filling up the form. Your roll number is ${data.rollNumber}.`;
-                } else {
-                    document.getElementById('message').textContent = 
-                        `Error: ${data.message}`;
-                }
-            })
-            .catch(error => {
-                document.getElementById('message').textContent = 
-                    `Error: Could not submit the form.`;
-                console.error('Error:', error);
-            });
+    <label for="studentSchool">Student School</label>
+    <input type="text" id="studentSchool" name="studentSchool" required>
+    
+    <label for="class">Class</label>
+    <select id="class" name="class" required>
+        <option value="Class 4">Class 4</option>
+        <option value="Class 5">Class 5</option>
+        <option value="Class 6">Class 6</option>
+        <option value="Class 7">Class 7</option>
+        <option value="Class 8">Class 8</option>
+        <option value="Class 9">Class 9</option>
+    </select>
+    
+    <button type="submit">Submit</button>
+</form>
+
+<div class="thank-you-message" id="thankYouMessage" style="display:none;"></div>
+
+<script>
+    const form = document.getElementById('studentForm');
+    const thankYouMessage = document.getElementById('thankYouMessage');
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); 
+
+        
+        const studentName = document.getElementById('studentName').value;
+        const fathersName = document.getElementById('fathersName').value;
+        const fathersPhone = document.getElementById('fathersPhone').value;
+        const mothersName = document.getElementById('mothersName').value;
+        const mothersPhone = document.getElementById('mothersPhone').value;
+        const studentSchool = document.getElementById('studentSchool').value;
+        const className = document.getElementById('class').value;
+
+        
+        const formData = new FormData();
+        formData.append('studentName', studentName);
+        formData.append('fathersName', fathersName);
+        formData.append('fathersPhone', fathersPhone);
+        formData.append('mothersName', mothersName);
+        formData.append('mothersPhone', mothersPhone);
+        formData.append('studentSchool', studentSchool);
+        formData.append('class', className);
+
+       
+        fetch('https://script.google.com/macros/s/AKfycbzqC6bYyTDNF_gO_McdIhuus2U1N1yG8Ox8Sls-rWGwpBOchXdtqRAwyyUa5Ba6EcTo/exec', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result === 'success') {
+                const rollNumber = data.rollNumber;
+                thankYouMessage.textContent = `Thank you ${studentName}. Your roll number is ${rollNumber}.`;
+                thankYouMessage.style.display = 'block';
+                form.reset();
+            } else {
+                thankYouMessage.textContent = `Error: ${data.error}`;
+                thankYouMessage.style.color = 'red';
+                thankYouMessage.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            thankYouMessage.textContent = `Error: ${error.message}`;
+            thankYouMessage.style.color = 'red';
+            thankYouMessage.style.display = 'block';
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
