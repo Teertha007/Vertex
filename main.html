@@ -6,44 +6,112 @@
     <title>Student Form</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #28a745;
         }
         form {
-            max-width: 400px;
-            margin: 0 auto;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: bold;
+            color: #555;
         }
         input, select, button {
             width: 100%;
             margin-bottom: 15px;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 5px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #28a745;
+            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
         }
         button {
             background-color: #28a745;
             color: white;
             font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         button:hover {
             background-color: #218838;
         }
-        .thank-you-message {
+        /* Popup Styles */
+        .popup {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
+            width: 90%;
             text-align: center;
-            margin-top: 20px;
-            font-size: 18px;
+            padding: 30px;
+            z-index: 1000;
+            display: none;
+            animation: slideDown 0.5s ease-out;
+        }
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -70%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+        .popup h2 {
             color: #28a745;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .popup p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .popup button {
+            margin-top: 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .popup button:hover {
+            background-color: #218838;
+        }
+        /* Overlay Styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
         }
     </style>
 </head>
@@ -62,7 +130,7 @@
     
     <label for="mothersName">Mother's Name</label>
     <input type="text" id="mothersName" name="mothersName" required>
-
+    
     <label for="mothersPhone">Mother's Phone Number</label>
     <input type="tel" id="mothersPhone" name="mothersPhone" required>
 
@@ -82,16 +150,23 @@
     <button type="submit">Submit</button>
 </form>
 
-<div class="thank-you-message" id="thankYouMessage" style="display:none;"></div>
+<div class="overlay" id="overlay"></div>
+
+<div class="popup" id="popup">
+    <h2>🎉 Thank You!</h2>
+    <p id="popupMessage"></p>
+    <button onclick="closePopup()">Okay</button>
+</div>
 
 <script>
     const form = document.getElementById('studentForm');
-    const thankYouMessage = document.getElementById('thankYouMessage');
+    const popup = document.getElementById('popup');
+    const overlay = document.getElementById('overlay');
+    const popupMessage = document.getElementById('popupMessage');
 
     form.addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent form submission to a server
+        event.preventDefault();
 
-        // Get form values
         const studentName = document.getElementById('studentName').value;
         const fathersName = document.getElementById('fathersName').value;
         const fathersPhone = document.getElementById('fathersPhone').value;
@@ -100,7 +175,6 @@
         const studentSchool = document.getElementById('studentSchool').value;
         const className = document.getElementById('class').value;
 
-        // Prepare data for sending
         const formData = new FormData();
         formData.append('studentName', studentName);
         formData.append('fathersName', fathersName);
@@ -110,31 +184,36 @@
         formData.append('studentSchool', studentSchool);
         formData.append('class', className);
 
-        // Send data to Google Sheets via Google Apps Script
-        fetch('https://script.google.com/macros/s/AKfycbxMsD8BW4NtiY47OP9cc2gP5qPfAa96Q5x7vzeWRrPytx62wbPIAIFzhSpLxfv0kJ2h/exec', {
+        fetch('https://script.google.com/macros/s/AKfycbwp8i_PB4T55tl8CnNbCuN8rSX9m5NAwCCmeoovqKKseqXCFMzyHhPEo7HaWA7I_BG5/exec', {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
             if (data.result === 'success') {
-                // Assuming `data.rollNumber` contains the roll number sent from the server
-                const rollNumber = data.rollNumber;
-                thankYouMessage.textContent = `Thank you ${studentName}. Your roll number is ${rollNumber}.`;
-                thankYouMessage.style.display = 'block';
+                popupMessage.innerHTML = `Thank you, <strong>${studentName}</strong>! Your roll number is <strong>${data.rollNumber}</strong>.`;
+                openPopup();
                 form.reset();
             } else {
-                thankYouMessage.textContent = `Error: ${data.error}`;
-                thankYouMessage.style.color = 'red';
-                thankYouMessage.style.display = 'block';
+                popupMessage.innerHTML = `Error: ${data.error}`;
+                openPopup();
             }
         })
         .catch(error => {
-            thankYouMessage.textContent = `Error: ${error.message}`;
-            thankYouMessage.style.color = 'red';
-            thankYouMessage.style.display = 'block';
+            popupMessage.innerHTML = `Error: ${error.message}`;
+            openPopup();
         });
     });
+
+    function openPopup() {
+        popup.style.display = 'block';
+        overlay.style.display = 'block';
+    }
+
+    function closePopup() {
+        popup.style.display = 'none';
+        overlay.style.display = 'none';
+    }
 </script>
 
 </body>
