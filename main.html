@@ -89,9 +89,9 @@
     const thankYouMessage = document.getElementById('thankYouMessage');
 
     form.addEventListener('submit', function(event) {
-        event.preventDefault(); 
+        event.preventDefault(); // Prevent form submission to a server
 
-        
+        // Get form values
         const studentName = document.getElementById('studentName').value;
         const fathersName = document.getElementById('fathersName').value;
         const fathersPhone = document.getElementById('fathersPhone').value;
@@ -100,7 +100,7 @@
         const studentSchool = document.getElementById('studentSchool').value;
         const className = document.getElementById('class').value;
 
-        
+        // Prepare data for sending
         const formData = new FormData();
         formData.append('studentName', studentName);
         formData.append('fathersName', fathersName);
@@ -110,14 +110,15 @@
         formData.append('studentSchool', studentSchool);
         formData.append('class', className);
 
-       
-        fetch('https://script.google.com/macros/s/AKfycbzqC6bYyTDNF_gO_McdIhuus2U1N1yG8Ox8Sls-rWGwpBOchXdtqRAwyyUa5Ba6EcTo/exec', {
+        // Send data to Google Sheets via Google Apps Script
+        fetch('https://script.google.com/macros/s/AKfycbxMsD8BW4NtiY47OP9cc2gP5qPfAa96Q5x7vzeWRrPytx62wbPIAIFzhSpLxfv0kJ2h/exec', {
             method: 'POST',
             body: formData
         })
         .then(response => response.json())
         .then(data => {
             if (data.result === 'success') {
+                // Assuming `data.rollNumber` contains the roll number sent from the server
                 const rollNumber = data.rollNumber;
                 thankYouMessage.textContent = `Thank you ${studentName}. Your roll number is ${rollNumber}.`;
                 thankYouMessage.style.display = 'block';
