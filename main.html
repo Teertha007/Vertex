@@ -3,157 +3,334 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Form</title>
+    <title>Student Registration Form</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* CSS Variables for theming */
+        :root {
+            /* Light Mode Colors */
+            --primary-color: #007bff;
+            --primary-hover: #0069d9;
+            --success-color: #28a745;
+            --body-bg: #f8f9fa;
+            --form-bg: #ffffff;
+            --text-color: #212529;
+            --label-color: #555;
+            --border-color: #ced4da;
+            --input-bg: #ffffff;
+            --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --focus-shadow: rgba(0, 123, 255, 0.25);
+            --overlay-bg: rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode {
+            /* Dark Mode Colors */
+            --primary-color: #0d8bff;
+            --primary-hover: #3b9eff;
+            --success-color: #20c997;
+            --body-bg: #121212;
+            --form-bg: #1e1e1e;
+            --text-color: #e9e9e9;
+            --label-color: #adb5bd;
+            --border-color: #495057;
+            --input-bg: #2c2c2c;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            --focus-shadow: rgba(13, 139, 255, 0.3);
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-color);
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            overflow: hidden; /* Hide scrollbars caused by canvas */
         }
+
+        /* --- New Canvas for Interactive Background --- */
+        #interactive-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Place it behind all other content */
+        }
+
+        /* --- Theme Toggle Switch --- */
+        .theme-switch-wrapper {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .theme-switch {
+            display: inline-block;
+            height: 24px;
+            position: relative;
+            width: 50px;
+            margin: 0 10px;
+        }
+        .theme-switch input { display: none; }
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            background-color: #fff;
+            bottom: 3px;
+            content: "";
+            height: 18px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 18px;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+        input:checked + .slider:before {
+            transform: translateX(25px);
+        }
+
+        /* Sun and Moon Icons */
+        .theme-icon {
+            font-size: 20px;
+            color: var(--text-color);
+            transition: color 0.3s ease;
+        }
+        
+        .form-container {
+            max-width: 550px;
+            width: 100%;
+            margin: 20px auto;
+            background-color: var(--form-bg);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: var(--box-shadow);
+            border-top: 5px solid var(--primary-color);
+            transition: background-color 0.3s ease, border-top-color 0.3s ease;
+            z-index: 1; /* Ensure form is above background canvas */
+        }
+        
         h1 {
             text-align: center;
-            color: #28a745;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            font-weight: 600;
         }
-        form {
-            max-width: 500px;
-            margin: 20px auto;
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
+
         label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--label-color);
         }
-        input, select, button {
+
+        input, select {
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
         }
+
         input:focus, select:focus {
             outline: none;
-            border-color: #28a745;
-            box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--focus-shadow);
         }
+        
+        select option {
+            background: var(--form-bg);
+            color: var(--text-color);
+        }
+
         button {
-            background-color: #28a745;
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
             color: white;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        button:hover {
-            background-color: #218838;
+
+        button:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
         }
-        /* Popup Styles */
+
+        button:disabled {
+            background-color: #a0c9f7;
+            cursor: not-allowed;
+        }
+        body.dark-mode button:disabled {
+             background-color: #3a5b82;
+        }
+        
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         .popup {
             position: fixed;
-            top: 40%;
+            top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: var(--form-bg);
             border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
             max-width: 450px;
             width: 90%;
             text-align: center;
             padding: 30px;
             z-index: 1000;
             display: none;
-            animation: slideDown 0.5s ease-out;
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease, background-color 0.3s ease;
         }
-        @keyframes slideDown {
-            from {
-                transform: translate(-50%, -70%);
-                opacity: 0;
-            }
-            to {
-                transform: translate(-50%, -50%);
-                opacity: 1;
-            }
+
+        .popup.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
         }
+
         .popup h2 {
-            color: #28a745;
+            color: var(--success-color);
             font-size: 24px;
+            margin-top: 0;
             margin-bottom: 15px;
         }
+
         .popup p {
             font-size: 18px;
             margin: 10px 0;
+            color: var(--text-color);
         }
+        
         .popup button {
             margin-top: 20px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
+            width: auto;
+            padding: 12px 30px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
+        
         .popup button:hover {
-            background-color: #218838;
+            background-color: var(--primary-hover);
         }
-        /* Overlay Styles */
+
         .overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
+            background-color: var(--overlay-bg);
             z-index: 999;
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease, background-color 0.3s ease;
+        }
+        .overlay.show {
+            display: block;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
 
-<h1>Vertex junior talent -2024</h1>
-<form id="studentForm">
-    <label for="studentName">Student Name</label>
-    <input type="text" id="studentName" name="studentName" required>
-    
-    <label for="fathersName">Father's Name</label>
-    <input type="text" id="fathersName" name="fathersName" required>
-    
-    <label for="fathersPhone">Father's Phone Number</label>
-    <input type="tel" id="fathersPhone" name="fathersPhone" required>
-    
-    <label for="mothersName">Mother's Name</label>
-    <input type="text" id="mothersName" name="mothersName" required>
-    
-    <label for="mothersPhone">Mother's Phone Number</label>
-    <input type="tel" id="mothersPhone" name="mothersPhone" required>
+<canvas id="interactive-bg"></canvas>
 
-    <label for="studentSchool">Student School</label>
-    <input type="text" id="studentSchool" name="studentSchool" required>
-    
-    <label for="class">Class</label>
-    <select id="class" name="class" required>
-        <option value="Class 4">Class 4</option>
-        <option value="Class 5">Class 5</option>
-        <option value="Class 6">Class 6</option>
-        <option value="Class 7">Class 7</option>
-        <option value="Class 8">Class 8</option>
-        <option value="Class 9">Class 9</option>
-    </select>
-    
-    <button type="submit">Submit</button>
-</form>
+<div class="theme-switch-wrapper">
+    <span class="theme-icon">☀️</span>
+    <label class="theme-switch" for="checkbox">
+        <input type="checkbox" id="checkbox" />
+        <div class="slider round"></div>
+    </label>
+    <span class="theme-icon">🌙</span>
+</div>
+
+<div class="form-container">
+    <h1>Vertex Junior Talent 2025</h1>
+    <form id="studentForm">
+        <label for="studentName">Student Name</label>
+        <input type="text" id="studentName" name="studentName" required>
+        
+        <label for="fathersName">Father's Name</label>
+        <input type="text" id="fathersName" name="fathersName" required>
+        
+        <label for="fathersPhone">Father's Phone Number</label>
+        <input type="tel" id="fathersPhone" name="fathersPhone" required>
+        
+        <label for="mothersName">Mother's Name</label>
+        <input type="text" id="mothersName" name="mothersName" required>
+        
+        <label for="mothersPhone">Mother's Phone Number</label>
+        <input type="tel" id="mothersPhone" name="mothersPhone" required>
+
+        <label for="studentSchool">Student School</label>
+        <input type="text" id="studentSchool" name="studentSchool" required>
+        
+        <label for="class">Class</label>
+        <select id="class" name="class" required>
+            <option value="" disabled selected>Select a class</option>
+            <option value="Class 4">Class 4</option>
+            <option value="Class 5">Class 5</option>
+            <option value="Class 6">Class 6</option>
+            <option value="Class 7">Class 7</option>
+            <option value="Class 8">Class 8</option>
+            <option value="Class 9">Class 9</option>
+        </select>
+        
+        <button type="submit" id="submitButton">Submit</button>
+    </form>
+</div>
 
 <div class="overlay" id="overlay"></div>
 
 <div class="popup" id="popup">
-    <h2>🎉 Thank You!</h2>
+    <h2 id="popupTitle">🎉 Thank You!</h2>
     <p id="popupMessage"></p>
     <button onclick="closePopup()">Okay</button>
 </div>
@@ -163,26 +340,16 @@
     const popup = document.getElementById('popup');
     const overlay = document.getElementById('overlay');
     const popupMessage = document.getElementById('popupMessage');
+    const popupTitle = document.getElementById('popupTitle');
+    const submitButton = document.getElementById('submitButton');
 
+    // --- FORM SUBMISSION LOGIC ---
     form.addEventListener('submit', function(event) {
         event.preventDefault();
-
-        const studentName = document.getElementById('studentName').value;
-        const fathersName = document.getElementById('fathersName').value;
-        const fathersPhone = document.getElementById('fathersPhone').value;
-        const mothersName = document.getElementById('mothersName').value;
-        const mothersPhone = document.getElementById('mothersPhone').value;
-        const studentSchool = document.getElementById('studentSchool').value;
-        const className = document.getElementById('class').value;
-
-        const formData = new FormData();
-        formData.append('studentName', studentName);
-        formData.append('fathersName', fathersName);
-        formData.append('fathersPhone', fathersPhone);
-        formData.append('mothersName', mothersName);
-        formData.append('mothersPhone', mothersPhone);
-        formData.append('studentSchool', studentSchool);
-        formData.append('class', className);
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Submitting... <span class="spinner"></span>';
+        const formData = new FormData(form);
+        const studentName = formData.get('studentName');
 
         fetch('https://script.google.com/macros/s/AKfycbw5kl2MCmbr6kpOoQCOIUZ6ZUtcVGm--ns_r_k6vUDBxDdMHEQW-GC0I4VjWGLlOpAw/exec', {
             method: 'POST',
@@ -191,29 +358,171 @@
         .then(response => response.json())
         .then(data => {
             if (data.result === 'success') {
-                popupMessage.innerHTML = `Thank you, <strong>${studentName}</strong>! Your roll number is <strong>${data.rollNumber}</strong>.`;
-                openPopup();
+                popupTitle.innerHTML = "🎉 Thank You!";
+                popupMessage.innerHTML = `Welcome, <strong>${studentName}</strong>! Your roll number is <strong>${data.rollNumber}</strong>.`;
                 form.reset();
             } else {
-                popupMessage.innerHTML = `Error: ${data.error}`;
-                openPopup();
+                popupTitle.innerHTML = "⚠️ Error";
+                popupMessage.innerHTML = `Something went wrong: ${data.error}`;
             }
+            openPopup();
         })
         .catch(error => {
-            popupMessage.innerHTML = `Error: ${error.message}`;
+            popupTitle.innerHTML = "⚠️ Network Error";
+            popupMessage.innerHTML = `Could not submit the form. Please check your connection.`;
             openPopup();
+        })
+        .finally(() => {
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Submit';
         });
     });
 
     function openPopup() {
-        popup.style.display = 'block';
-        overlay.style.display = 'block';
+        overlay.classList.add('show');
+        popup.classList.add('show');
     }
 
     function closePopup() {
-        popup.style.display = 'none';
-        overlay.style.display = 'none';
+        overlay.classList.remove('show');
+        popup.classList.remove('show');
     }
+
+    // --- THEME SWITCHER AND INTERACTIVE BACKGROUND LOGIC ---
+    const themeToggle = document.getElementById('checkbox');
+    const currentTheme = localStorage.getItem('theme');
+    var setDarkMode; // Declare here to make it available in the global scope of the script
+
+    // Original setDarkMode function
+    function originalSetDarkMode(isDark) {
+        if (isDark) {
+            document.body.classList.add('dark-mode');
+            themeToggle.checked = true;
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.body.classList.remove('dark-mode');
+            themeToggle.checked = false;
+            localStorage.setItem('theme', 'light');
+        }
+    }
+    setDarkMode = originalSetDarkMode;
+
+    const canvas = document.getElementById('interactive-bg');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let particlesArray;
+
+        const mouse = { x: null, y: null, radius: (canvas.height / 100) * (canvas.width / 100) };
+
+        window.addEventListener('mousemove', (event) => { mouse.x = event.x; mouse.y = event.y; });
+        window.addEventListener('mouseout', () => { mouse.x = undefined; mouse.y = undefined; });
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            mouse.radius = (canvas.height / 100) * (canvas.width / 100);
+            init();
+        });
+
+        class Particle {
+            constructor(x, y, dirX, dirY, size, color) {
+                this.x = x; this.y = y; this.directionX = dirX; this.directionY = dirY; this.size = size; this.color = color;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+            }
+            update() {
+                if (this.x > canvas.width || this.x < 0) { this.directionX = -this.directionX; }
+                if (this.y > canvas.height || this.y < 0) { this.directionY = -this.directionY; }
+                this.x += this.directionX;
+                this.y += this.directionY;
+                this.draw();
+            }
+        }
+
+        function init() {
+            particlesArray = [];
+            const particleColor = getComputedStyle(document.body).getPropertyValue('--text-color').trim();
+            let numParticles = (canvas.height * canvas.width) / 10000;
+            for (let i = 0; i < numParticles; i++) {
+                let size = (Math.random() * 2.5) + 1;
+                let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                let dirX = (Math.random() * 0.4) - 0.2;
+                let dirY = (Math.random() * 0.4) - 0.2;
+                particlesArray.push(new Particle(x, y, dirX, dirY, size, particleColor));
+            }
+        }
+
+        function connect() {
+            let opacityValue = 1;
+            const lineColor = getComputedStyle(document.body).getPropertyValue('--text-color').trim();
+            const rgb = lineColor.match(/\d+/g);
+            if (!rgb) return;
+
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                                 ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                    if (distance < (canvas.width/7) * (canvas.height/7)) {
+                        opacityValue = 1 - (distance/20000);
+                        ctx.strokeStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacityValue})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+                 if (mouse.x && mouse.y) {
+                    let distanceToMouse = ((particlesArray[a].x - mouse.x) * (particlesArray[a].x - mouse.x)) +
+                                          ((particlesArray[a].y - mouse.y) * (particlesArray[a].y - mouse.y));
+                    if (distanceToMouse < mouse.radius * 200) {
+                        opacityValue = 1 - (distanceToMouse / (mouse.radius * 200));
+                        ctx.strokeStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacityValue})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, innerWidth, innerHeight);
+            particlesArray.forEach(p => p.update());
+            connect();
+        }
+
+        // Overwrite setDarkMode to also re-initialize particles
+        setDarkMode = function(isDark) {
+            originalSetDarkMode(isDark);
+            setTimeout(init, 50); // Delay to allow CSS variables to update
+        }
+
+        init();
+        animate();
+    }
+
+    // Check for saved theme in localStorage, otherwise check system preference
+    if (currentTheme) {
+        setDarkMode(currentTheme === 'dark');
+    } else {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setDarkMode(prefersDark);
+    }
+
+    // Listener for toggle switch
+    themeToggle.addEventListener('change', function() {
+        setDarkMode(this.checked);
+    });
 </script>
 
 </body>
