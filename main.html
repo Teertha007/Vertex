@@ -46,13 +46,14 @@
             background-color: var(--body-bg);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 40px 20px; /* Increased padding for better spacing */
             display: flex;
             justify-content: center;
-            align-items: center;
+            /* align-items: center; <-- REMOVED to allow scrolling from the top */
             min-height: 100vh;
             transition: background-color 0.3s ease, color 0.3s ease;
-            overflow: hidden; /* Hide scrollbars caused by canvas */
+            /* overflow: hidden; <-- REMOVED to enable page scrolling */
+            box-sizing: border-box;
         }
 
         /* --- New Canvas for Interactive Background --- */
@@ -67,11 +68,12 @@
 
         /* --- Theme Toggle Switch --- */
         .theme-switch-wrapper {
-            position: absolute;
+            position: fixed; /* Changed to fixed to stay in view on scroll */
             top: 20px;
             right: 20px;
             display: flex;
             align-items: center;
+            z-index: 10; /* Ensure it's above the form */
         }
         .theme-switch {
             display: inline-block;
@@ -154,6 +156,7 @@
             border-radius: 8px;
             box-sizing: border-box;
             transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            font-size: 1rem; /* Ensure consistent font size */
         }
 
         input:focus, select:focus {
@@ -275,6 +278,29 @@
         .overlay.show {
             display: block;
             opacity: 1;
+        }
+
+        /* --- Media Query for Mobile Optimization --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 20px 10px; /* Reduce body padding on small screens */
+            }
+            .form-container {
+                padding: 25px 20px; /* Reduce form padding */
+                margin: 10px auto;
+            }
+            h1 {
+                font-size: 1.6rem; /* Adjust heading size for mobile */
+            }
+            .popup {
+                padding: 25px 20px;
+            }
+            .popup h2 {
+                font-size: 22px;
+            }
+            .popup p {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -461,13 +487,21 @@
         function connect() {
             let opacityValue = 1;
             const lineColor = getComputedStyle(document.body).getPropertyValue('--text-color').trim();
-            const rgb = lineColor.match(/\d+/g);
+            // A simple regex to extract RGB values from 'rgb(r, g, b)' or hex.
+            // This is a simplified approach. A more robust solution would handle all color formats.
+            let rgb;
+            if (lineColor.startsWith('#')) {
+                const bigint = parseInt(lineColor.substring(1), 16);
+                rgb = [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+            } else {
+                rgb = lineColor.match(/\d+/g);
+            }
             if (!rgb) return;
 
             for (let a = 0; a < particlesArray.length; a++) {
                 for (let b = a; b < particlesArray.length; b++) {
                     let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
-                                 ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                                   ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
                     if (distance < (canvas.width/7) * (canvas.height/7)) {
                         opacityValue = 1 - (distance/20000);
                         ctx.strokeStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacityValue})`;
@@ -527,5 +561,3 @@
 
 </body>
 </html>
-
-
