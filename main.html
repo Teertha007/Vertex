@@ -199,14 +199,15 @@
              background-color: #3a5b82;
         }
         
-        /* --- New Form Note Style --- */
+        /* --- MODIFIED Form Note Style --- */
         #form-note {
            text-align: center;
-           font-size: 0.9rem;
-           color: var(--label-color);
+           font-size: 1rem; /* Increased font size */
+           color: #dc3545; /* Changed color to red */
            margin-top: 15px;
            font-style: italic;
-           margin-bottom: 0; /* Ensure no extra space at form bottom */
+           font-weight: 600; /* Added bold font weight */
+           margin-bottom: 0;
         }
         
         .spinner {
@@ -316,8 +317,10 @@
 </head>
 <body>
 
+<!-- Background Canvas -->
 <canvas id="interactive-bg"></canvas>
 
+<!-- Theme Toggle Switch -->
 <div class="theme-switch-wrapper">
     <span class="theme-icon">☀️</span>
     <label class="theme-switch" for="checkbox">
@@ -327,6 +330,7 @@
     <span class="theme-icon">🌙</span>
 </div>
 
+<!-- Main Registration Form Container -->
 <div class="form-container">
     <h1>Vertex Junior Talent 2025</h1>
     <form id="studentForm">
@@ -361,13 +365,14 @@
         
         <button type="submit" id="submitButton">Submit</button>
 
+        <!-- This is the bolded, eye-catching text -->
         <p id="form-note">After submitting, please wait a few moments for your roll number to be generated.</p>
 
     </form>
 </div>
 
+<!-- Popup Modal and Overlay -->
 <div class="overlay" id="overlay"></div>
-
 <div class="popup" id="popup">
     <h2 id="popupTitle">🎉 Thank You!</h2>
     <p id="popupMessage"></p>
@@ -390,6 +395,7 @@
         const formData = new FormData(form);
         const studentName = formData.get('studentName');
 
+        // This is the URL for your deployed Google Apps Script
         fetch('https://script.google.com/macros/s/AKfycbw5kl2MCmbr6kpOoQCOIUZ6ZUtcVGm--ns_r_k6vUDBxDdMHEQW-GC0I4VjWGLlOpAw/exec', {
             method: 'POST',
             body: formData
@@ -509,7 +515,7 @@
             } else {
                 rgb = lineColor.match(/\d+/g);
             }
-            if (!rgb) return;
+            if (!rgb) return; // Exit if color parsing fails
 
             for (let a = 0; a < particlesArray.length; a++) {
                 for (let b = a; b < particlesArray.length; b++) {
