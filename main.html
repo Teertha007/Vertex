@@ -199,6 +199,16 @@
              background-color: #3a5b82;
         }
         
+        /* --- New Form Note Style --- */
+        #form-note {
+           text-align: center;
+           font-size: 0.9rem;
+           color: var(--label-color);
+           margin-top: 15px;
+           font-style: italic;
+           margin-bottom: 0; /* Ensure no extra space at form bottom */
+        }
+        
         .spinner {
             width: 18px;
             height: 18px;
@@ -350,6 +360,9 @@
         </select>
         
         <button type="submit" id="submitButton">Submit</button>
+
+        <p id="form-note">After submitting, please wait a few moments for your roll number to be generated.</p>
+
     </form>
 </div>
 
@@ -501,7 +514,7 @@
             for (let a = 0; a < particlesArray.length; a++) {
                 for (let b = a; b < particlesArray.length; b++) {
                     let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
-                                   ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                                     ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
                     if (distance < (canvas.width/7) * (canvas.height/7)) {
                         opacityValue = 1 - (distance/20000);
                         ctx.strokeStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacityValue})`;
@@ -513,18 +526,18 @@
                     }
                 }
                  if (mouse.x && mouse.y) {
-                    let distanceToMouse = ((particlesArray[a].x - mouse.x) * (particlesArray[a].x - mouse.x)) +
-                                          ((particlesArray[a].y - mouse.y) * (particlesArray[a].y - mouse.y));
-                    if (distanceToMouse < mouse.radius * 200) {
-                        opacityValue = 1 - (distanceToMouse / (mouse.radius * 200));
-                        ctx.strokeStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacityValue})`;
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                        ctx.lineTo(mouse.x, mouse.y);
-                        ctx.stroke();
-                    }
-                }
+                     let distanceToMouse = ((particlesArray[a].x - mouse.x) * (particlesArray[a].x - mouse.x)) +
+                                           ((particlesArray[a].y - mouse.y) * (particlesArray[a].y - mouse.y));
+                     if (distanceToMouse < mouse.radius * 200) {
+                         opacityValue = 1 - (distanceToMouse / (mouse.radius * 200));
+                         ctx.strokeStyle = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${opacityValue})`;
+                         ctx.lineWidth = 1;
+                         ctx.beginPath();
+                         ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                         ctx.lineTo(mouse.x, mouse.y);
+                         ctx.stroke();
+                     }
+                 }
             }
         }
         
